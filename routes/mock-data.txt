@@ -1,0 +1,9 @@
+Customer: Sam Smith
+  Id: ObjectId("5dfee33fd500a27ec2c26c04")
+
+  ShoppingCart: "5e0feb11bc44d822bea369e8"
+    items: ["5dfee80339578c056b7a6318"]
+
+
+
+

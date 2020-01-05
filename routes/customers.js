@@ -83,4 +83,15 @@ router.post(
   }
 )
 
+router.get("/:customerId", async (req, res) => {
+  const id = req.params.customerId
+
+  const customer = await Customer.findOne({ _id: id }).populate({
+    path: "favorites",
+    populate: { path: "items" }
+  })
+
+  res.json(customer)
+})
+
 module.exports = router

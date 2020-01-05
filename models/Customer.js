@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const Schema = mongoose.Schema
 
 const customerSchema = new mongoose.Schema({
   name: {
@@ -34,14 +35,12 @@ const customerSchema = new mongoose.Schema({
     min: "01-01-1970"
   },
   shoppingCart: {
-    type: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Book" }
-    ] /* will change to objectId */
+    type: Schema.Types.ObjectId,
+    ref: "ShoppingCart"
   },
   favorites: {
-    type: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Book" }
-    ] /* will change to objectId */
+    type: Schema.Types.ObjectId,
+    ref: "Favorites"
   },
   createdAt: {
     type: Date,

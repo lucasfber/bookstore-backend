@@ -31,6 +31,7 @@ router.post(
 )
 
 router.get("/:customerId", async (req, res) => {
+  /* TODO: handle 404 error */
   const customerId = req.params.customerId
   let cart = await ShoppingCart.findOne({ customerId }).populate("customerId")
   console.log(cart)
