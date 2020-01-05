@@ -11,7 +11,10 @@ connectToDatabase()
 app.use(express.json({ extended: false }))
 
 app.use("/api/auth", require("./routes/auth"))
-app.use("/api/users", require("./routes/users"))
+app.use("/api/customers", require("./routes/customers"))
+app.use("/api/orders", require("./routes/orders"))
+app.use("/api/shopping-carts", require("./routes/shoppingCarts"))
+app.use("/api/address", require("./routes/address"))
 app.use("/api/books", require("./routes/books"))
 app.use("/api/profiles", require("./routes/profiles"))
 

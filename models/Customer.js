@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const Book = require("./Book")
 
 const customerSchema = new mongoose.Schema({
   name: {
@@ -30,20 +29,24 @@ const customerSchema = new mongoose.Schema({
     enum: ["M", "F"],
     default: "M"
   },
-  address: {
-    type: [String]
-  },
   birthDate: {
-    type: Date
+    type: Date,
+    min: "01-01-1970"
   },
   shoppingCart: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }]
+    type: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Book" }
+    ] /* will change to objectId */
   },
   favorites: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }]
+    type: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Book" }
+    ] /* will change to objectId */
   },
   createdAt: {
     type: Date,
     default: Date.now
   }
 })
+
+module.exports = mongoose.model("Customer", customerSchema)

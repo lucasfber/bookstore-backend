@@ -2,6 +2,7 @@ const express = require("express")
 const { check, validationResult } = require("express-validator")
 const router = express.Router()
 
+const Book = require("../models/Book")
 router.post(
   "/",
   [
@@ -21,13 +22,35 @@ router.post(
       .not()
       .isEmpty()
   ],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
       res.status(400).json({ errros: errors.array() })
     }
-    res.json("Books route working")
+
+    const { isbn, edition } = req.body
+
+    try {
+      let book = await Book.findOne({ $and: [{ isbn, edition }] })
+
+      if (book) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "This book already exists" }] })
+      }
+
+      book = new Book({
+        ...req.body
+      })
+
+      await book.save()
+
+      res.status(200).json({ msg: "The book was created successfully" })
+    } catch (err) {
+      console.error(err)
+      res.status(500).send("Server error")
+    }
   }
 )
 
