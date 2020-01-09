@@ -2,18 +2,21 @@ const express = require("express")
 const router = express.Router()
 
 const auth = require("../middlewares/auth")
-const User = require("../models/User")
+const Customer = require("../models/Customer")
 
 const { check, validationResult } = require("express-validator")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const config = require("config")
 
+/* Get customer info using his token */
 router.get("/", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password")
+    const customer = await Customer.findById(req.customer.id).select(
+      "-password"
+    )
 
-    return res.json(user)
+    return res.json(customer)
   } catch (err) {
     console.error(err.message)
     return res.status(500).send("Server Error")
@@ -22,7 +25,7 @@ router.get("/", auth, async (req, res) => {
 
 /* 
   @ route   POST api/auth
-  @ desc    Authenticate user & get token
+  @ desc    Authenticate user & get token - LOGIN
   @ access  Public
 */
 router.post(
@@ -39,15 +42,15 @@ router.post(
     const { email, password } = req.body
 
     try {
-      let user = await User.findOne({ email })
+      let customer = await Customer.findOne({ email })
 
-      if (!user) {
+      if (!customer) {
         return res
           .status(400)
           .json({ errors: [{ msg: "Invalid Credentials." }] })
       }
 
-      isMatch = await bcrypt.compare(password, user.password)
+      isMatch = await bcrypt.compare(password, customer.password)
 
       if (!isMatch) {
         return res
@@ -56,8 +59,8 @@ router.post(
       }
 
       const payload = {
-        user: {
-          id: user.id
+        customer: {
+          id: customer.id
         }
       }
 

@@ -34,14 +34,6 @@ const customerSchema = new mongoose.Schema({
     type: Date,
     min: "01-01-1970"
   },
-  shoppingCart: {
-    type: Schema.Types.ObjectId,
-    ref: "ShoppingCart"
-  },
-  favorites: {
-    type: Schema.Types.ObjectId,
-    ref: "Favorites"
-  },
   createdAt: {
     type: Date,
     default: Date.now

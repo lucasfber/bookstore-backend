@@ -4,6 +4,42 @@ Customer: Sam Smith
   ShoppingCart: "5e0feb11bc44d822bea369e8"
     items: ["5dfee80339578c056b7a6318"]
 
+  Favorites: "5e116031a78732450025bb97"
 
 
+Book: 5e1321f6cf132e242cd19c16
+  title: Dracula
 
+  {
+        "_id" : ObjectId("5e133e01ef484b45185da5ae"),
+        "customerId" : ObjectId("5dfee33fd500a27ec2c26c04"),
+        "receiver" : "Janice Smith",
+        "addressType" : "House",
+        "cep" : "90203",
+        "street" : "St John Paul II",
+        "number" : 900,
+        "city" : "Bell Gardens",
+        "state" : "CA",
+        "__v" : 0
+}
+
+{
+        "_id" : ObjectId("5e133e01ef484b45185da5ae"),
+        "customerId" : ObjectId("5dfee33fd500a27ec2c26c04"),
+        "receiver" : "Samantha Smith",
+        "addressType" : "House",
+        "cep" : "90201",
+        "street" : "St John Paul II",
+        "number" : 921,
+        "city" : "Bell Gardens",
+        "state" : "CA",
+        "__v" : 0
+}
+
+
+email: themadman@ozzy.com
+password: blacksabbath70
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lciI6eyJpZCI6IjVlMTY0Y2QzOGY0ZDAwMjllZjhjZGRlMCJ9LCJpYXQiOjE1Nzg1MjExNTcsImV4cCI6MTU3ODg4MTE1N30.wViaNVcO-h1KaQPvPDQrgIXLditkEVZ8ultMg55f_LM"
+
+
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lciI6eyJpZCI6IjVlMTY0Y2QzOGY0ZDAwMjllZjhjZGRlMCJ9LCJpYXQiOjE1Nzg1MjExNTcsImV4cCI6MTU3ODg4MTE1N30.wViaNVcO-h1KaQPvPDQrgIXLditkEVZ8ultMg55f_LM"

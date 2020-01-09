@@ -1,6 +1,7 @@
 const express = require("express")
 const { check, validationResult } = require("express-validator")
 const router = express.Router()
+const auth = require("../middlewares/auth")
 
 const Book = require("../models/Book")
 router.post(
@@ -53,5 +54,93 @@ router.post(
     }
   }
 )
+
+/* Get all Books */
+router.get("/", async (req, res) => {
+  try {
+    const books = await Book.find()
+
+    res.json({ books: books })
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
+})
+
+/* Get a Book by Id */
+router.get("/:bookId", async (req, res) => {
+  const _id = req.params.bookId
+
+  try {
+    const book = await Book.findOne({ _id })
+
+    if (!book) {
+      return res.status(404).json({
+        errors: [
+          {
+            message: "Book not found!",
+            detail: "An invalid book's id was sent."
+          }
+        ]
+      })
+    }
+    return res.status(200).json(book)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
+})
+
+/* Update a Book */
+router.put("/:bookId", auth, async (req, res) => {
+  const _id = req.params.bookId
+
+  try {
+    let book = await Book.findOne({ _id })
+
+    if (!book) {
+      return res.status(404).json({
+        errors: [
+          {
+            message: "Book not found!",
+            detail: "An invalid book's id was sent."
+          }
+        ]
+      })
+    }
+
+    book = await Book.findOneAndUpdate({ _id }, { ...req.body }, { new: true })
+    res.status(200).json(book)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
+})
+
+/* Delete a book by Id */
+router.delete("/:bookId", auth, async (req, res) => {
+  const _id = req.params.bookId
+
+  try {
+    let book = await Book.findOne({ _id })
+
+    if (!book) {
+      return res.status(404).json({
+        errors: [
+          {
+            message: "Book not found!",
+            detail: "An invalid book's id was sent."
+          }
+        ]
+      })
+    }
+
+    await Book.findOneAndRemove({ _id })
+    return res.status(204).send()
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
+})
 
 module.exports = router

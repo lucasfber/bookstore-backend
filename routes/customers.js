@@ -4,6 +4,7 @@ const { check, validationResult } = require("express-validator")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const config = require("config")
+const auth = require("../middlewares/auth")
 
 const Customer = require("../models/Customer")
 
@@ -83,6 +84,9 @@ router.post(
   }
 )
 
+/* TODO: handle 404 error for this route
+  Is this route really necessary?
+*/
 router.get("/:customerId", async (req, res) => {
   const id = req.params.customerId
 
@@ -92,6 +96,48 @@ router.get("/:customerId", async (req, res) => {
   })
 
   res.json(customer)
+})
+
+/* Edit a Customer Info */
+router.put("/", auth, async (req, res) => {
+  let _id = req.customer.id
+
+  try {
+    let customer = await Customer.findOne({ _id })
+
+    if (!customer) {
+      return res.status(404).json({
+        errors: [
+          {
+            message: "Customer not found!",
+            detail: "An invalid customer's id was sent."
+          }
+        ]
+      })
+    }
+
+    customer = await Customer.findOneAndUpdate(
+      { _id },
+      { ...req.body },
+      { new: true }
+    )
+    res.status(200).json(customer)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
+})
+
+/* Delete the user/account */
+router.delete("/", auth, async (req, res) => {
+  const _id = req.customer.id
+
+  try {
+    return res.status(204).send()
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
 })
 
 module.exports = router
