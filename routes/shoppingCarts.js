@@ -1,42 +1,33 @@
 const express = require("express")
-const { check, validationResult } = require("express-validator")
+const auth = require("../middlewares/auth")
 const router = express.Router()
 
+/* Is this route really necessary? */
 const ShoppingCart = require("../models/ShoppingCart")
-router.post(
-  "/",
-  [check("totalValue", "Your must enter a valid number").isNumeric()],
-  async (req, res) => {
-    const errors = validationResult(req)
 
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errros: errors.array() })
-    }
+router.post("/", async (req, res) => {
+  try {
+    const shoppingCart = new ShoppingCart({
+      ...req.body
+    })
 
-    try {
-      const shoppingCart = new ShoppingCart({
-        ...req.body
-      })
+    await shoppingCart.save()
 
-      await shoppingCart.save()
-
-      return res
-        .status(200)
-        .json({ message: "The shopping cart was saved successfully" })
-    } catch (err) {
-      console.error(err)
-      return res.status(500).send("Server error")
-    }
+    return res
+      .status(200)
+      .json({ message: "The shopping cart was saved successfully" })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).send("Server error")
   }
-)
+})
 
-router.get("/:customerId", async (req, res) => {
-  /* TODO: handle 404 error */
-  const customerId = req.params.customerId
+/* Get Customer's Shopping Cart */
+router.get("/", auth, async (req, res) => {
+  const customerId = req.customer.id
 
   try {
     let cart = await ShoppingCart.findOne({ customerId }).populate("items")
-    console.log(cart)
     if (!cart) {
       return res.status(404).json({
         errors: [
@@ -47,6 +38,11 @@ router.get("/:customerId", async (req, res) => {
         ]
       })
     }
+
+    cart.items.forEach(item => {
+      cart.totalValue += item.price
+    })
+
     return res.json(cart)
   } catch (err) {
     console.error(err)
@@ -54,12 +50,13 @@ router.get("/:customerId", async (req, res) => {
   }
 })
 
-router.put("/:cartId", async (req, res) => {
-  /* TODO: Handle 404 error */
-
-  const id = req.params.cartId
+/* Add a book to Customer's Shopping Cart */
+router.put("/:bookId", auth, async (req, res) => {
   try {
-    let cart = await ShoppingCart.findById({ _id: id })
+    const customerId = req.customer.id
+
+    let cart = await ShoppingCart.findOne({ customerId })
+
     if (!cart) {
       return res.status(404).json({
         errors: [
@@ -70,26 +67,50 @@ router.put("/:cartId", async (req, res) => {
         ]
       })
     }
-    const bookId = req.body.bookId
 
-    if (!bookId) {
-      return res.status(400).json({
+    const bookId = req.params.bookId
+
+    cart.items.push(bookId)
+
+    cart = await cart.save()
+    res.status(200).json(cart)
+  } catch (err) {
+    console.error(err)
+    res.status(500).send("Server error")
+  }
+})
+
+/* Remove a book from Customer's Shopping Cart */
+router.delete("/:bookId", auth, async (req, res) => {
+  const customerId = req.customer.id
+
+  try {
+    let cart = await ShoppingCart.findOne({ customerId })
+
+    if (!cart) {
+      return res.status(404).json({
         errors: [
           {
-            message: "An invalid book's id was sent.",
-            detail: "An invalid or a empty id was sent on the request"
+            message: "Customer's cart not found!",
+            detail: "An invalid shopping cart's id was sent."
           }
         ]
       })
     }
 
-    cart.items.push(bookId)
+    const bookId = req.params.bookId
+    let items = cart.items
 
-    cart = await cart.save()
-    res.json(cart)
-  } catch (err) {
-    console.error(err)
-    res.status(500).send("Server error")
+    cart.items = items.filter(
+      item => JSON.stringify(item) !== JSON.stringify(bookId)
+    )
+
+    await cart.save()
+
+    return res.status(204).send()
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
   }
 })
 

@@ -100,6 +100,7 @@ router.put("/:addressId", async (req, res) => {
   }
 })
 
+/* Delete an Address */
 router.delete("/:addressId", async (req, res) => {
   const _id = req.params.addressId
 

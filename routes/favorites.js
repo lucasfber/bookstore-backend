@@ -1,7 +1,13 @@
 const express = require("express")
 const router = express.Router()
-
+const auth = require("../middlewares/auth")
 const Favorites = require("../models/Favorites")
+const ObjectId = require("mongoose").Types.ObjectId
+
+/* Create the Customer's Favorites 
+  Put this on pre method, when a customer has been created.
+  * Is this route really necessary?
+*/
 router.post("/", async (req, res) => {
   try {
     const favorites = new Favorites({
@@ -19,8 +25,9 @@ router.post("/", async (req, res) => {
   }
 })
 
-router.get("/:customerId", async (req, res) => {
-  const customerId = req.params.customerId
+/* Get customer's favorites */
+router.get("/", auth, async (req, res) => {
+  const customerId = req.customer.id
 
   try {
     const favorites = await Favorites.findOne({ customerId }).populate("items")
@@ -42,10 +49,12 @@ router.get("/:customerId", async (req, res) => {
   }
 })
 
-router.put("/:favoritesId", async (req, res) => {
-  const id = req.params.favoritesId
+/* Include an item into favorites */
+router.put("/:bookId", auth, async (req, res) => {
   try {
-    let favorites = await Favorites.findById({ _id: id })
+    const customerId = req.customer.id
+
+    let favorites = await Favorites.findOne({ customerId })
 
     if (!favorites) {
       return res.status(404).json({
@@ -58,25 +67,48 @@ router.put("/:favoritesId", async (req, res) => {
       })
     }
 
-    const bookId = req.body.bookId
-
-    if (!bookId) {
-      return res.status(400).json({
-        errors: [
-          {
-            message: "An invalid book's id was sent.",
-            detail: "An invalid or a empty id was sent on the request"
-          }
-        ]
-      })
-    }
+    const bookId = req.params.bookId
 
     favorites.items.push(bookId)
 
     favorites = await favorites.save()
-    res.json(favorites)
+
+    res.status(200).json(favorites)
   } catch (err) {
     console.error(err)
+    res.status(500).send("Server error.")
+  }
+})
+
+/* Remove a book from customer's favorites */
+router.delete("/:bookId", auth, async (req, res) => {
+  const customerId = req.customer.id
+
+  try {
+    let favorites = await Favorites.findOne({ customerId })
+
+    if (!favorites) {
+      return res.status(404).json({
+        errors: [
+          {
+            message: "Customer's favorites not found!",
+            detail: "An invalid favorites' id was sent."
+          }
+        ]
+      })
+    }
+    const bookId = req.params.bookId
+    let items = favorites.items
+
+    favorites.items = items.filter(
+      item => JSON.stringify(item) !== JSON.stringify(bookId)
+    )
+
+    await favorites.save()
+
+    return res.status(204).send()
+  } catch (error) {
+    console.error(error)
     res.status(500).send("Server error.")
   }
 })
