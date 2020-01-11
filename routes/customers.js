@@ -110,7 +110,7 @@ router.put("/", auth, async (req, res) => {
         errors: [
           {
             message: "Customer not found!",
-            detail: "An invalid customer's id was sent."
+            details: "An invalid customer's id was sent."
           }
         ]
       })

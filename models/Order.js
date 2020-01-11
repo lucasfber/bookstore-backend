@@ -20,8 +20,21 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Address"
   },
+  shippingType: {
+    type: String,
+    enum: ["Normal", "Express"],
+    default: "Normal"
+  },
   shippingCost: {
+    type: Number,
+    required: true
+  },
+  subtotal: {
     type: Number
+  },
+  discount: {
+    type: Number,
+    required: true
   },
   total: {
     type: Number
@@ -31,6 +44,9 @@ const orderSchema = new mongoose.Schema({
     default: false
   },
   receivedOn: {
+    type: Date
+  },
+  shoppingDate: {
     type: Date,
     default: Date.now
   }

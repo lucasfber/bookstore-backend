@@ -17,4 +17,19 @@ const shoppingCartSchema = new Schema({
   }
 })
 
+shoppingCartSchema.statics.getTotalValue = async function(items) {
+  let totalValue = 0
+  items.forEach(i => {
+    totalValue += i.price
+  })
+
+  return totalValue.toFixed(2)
+}
+
+shoppingCartSchema.methods.clearItems = async function() {
+  this.items = []
+  this.totalValue = 0
+  this.save()
+}
+
 module.exports = mongoose.model("ShoppingCart", shoppingCartSchema)
