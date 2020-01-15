@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-const shoppingCartSchema = new Schema({
+const basketSchema = new Schema({
   customerId: {
     type: Schema.Types.ObjectId,
     ref: "Customer"
@@ -17,7 +17,7 @@ const shoppingCartSchema = new Schema({
   }
 })
 
-shoppingCartSchema.statics.getTotalValue = async function(items) {
+basketSchema.statics.getTotalValue = async function(items) {
   let totalValue = 0
   items.forEach(i => {
     totalValue += i.price
@@ -26,10 +26,10 @@ shoppingCartSchema.statics.getTotalValue = async function(items) {
   return totalValue.toFixed(2)
 }
 
-shoppingCartSchema.methods.clearItems = async function() {
+basketSchema.methods.clearItems = async function() {
   this.items = []
   this.totalValue = 0
   this.save()
 }
 
-module.exports = mongoose.model("ShoppingCart", shoppingCartSchema)
+module.exports = mongoose.model("Basket", basketSchema)

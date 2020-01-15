@@ -2,10 +2,10 @@ const express = require("express")
 const auth = require("../middlewares/auth")
 const router = express.Router()
 
-/* Is this route really necessary? */
-const ShoppingCart = require("../models/ShoppingCart")
+const Basket = require("../models/Basket")
 
-router.post("/", async (req, res) => {
+/* Is this route really necessary? */
+/* router.post("/", async (req, res) => {
   try {
     const shoppingCart = new ShoppingCart({
       ...req.body
@@ -20,15 +20,15 @@ router.post("/", async (req, res) => {
     console.error(err)
     return res.status(500).send("Server error")
   }
-})
+}) */
 
-/* Get Customer's Shopping Cart */
+/* Get Customer's basket */
 router.get("/", auth, async (req, res) => {
   const customerId = req.customer.id
 
   try {
-    let cart = await ShoppingCart.findOne({ customerId }).populate("items")
-    if (!cart) {
+    let basket = await Basket.findOne({ customerId }).populate("items")
+    if (!basket) {
       return res.status(404).json({
         errors: [
           {
@@ -39,30 +39,30 @@ router.get("/", auth, async (req, res) => {
       })
     }
 
-    cart.items.forEach(item => {
-      cart.totalValue += item.price
+    basket.items.forEach(item => {
+      basket.totalValue += item.price
     })
 
-    return res.json(cart)
+    return res.json(basket)
   } catch (err) {
     console.error(err)
     res.status(500).send("Server error")
   }
 })
 
-/* Add a book to Customer's Shopping Cart */
+/* Add a book to Customer's basket */
 router.put("/:bookId", auth, async (req, res) => {
   try {
     const customerId = req.customer.id
 
-    let cart = await ShoppingCart.findOne({ customerId })
+    let basket = await Basket.findOne({ customerId })
 
-    if (!cart) {
+    if (!basket) {
       return res.status(404).json({
         errors: [
           {
-            message: "Customer's shopping cart not found!",
-            detail: "An invalid shopping cart's id was sent."
+            message: "Customer's basket not found!",
+            detail: "An invalid basket's id was sent."
           }
         ]
       })
@@ -70,42 +70,42 @@ router.put("/:bookId", auth, async (req, res) => {
 
     const bookId = req.params.bookId
 
-    cart.items.push(bookId)
+    basket.items.push(bookId)
 
-    cart = await cart.save()
-    res.status(200).json(cart)
+    basket = await basket.save()
+    res.status(200).json(basket)
   } catch (err) {
     console.error(err)
     res.status(500).send("Server error")
   }
 })
 
-/* Remove a book from Customer's Shopping Cart */
+/* Remove a book from Customer's basket */
 router.delete("/:bookId", auth, async (req, res) => {
   const customerId = req.customer.id
 
   try {
-    let cart = await ShoppingCart.findOne({ customerId })
+    let basket = await Basket.findOne({ customerId })
 
-    if (!cart) {
+    if (!basket) {
       return res.status(404).json({
         errors: [
           {
-            message: "Customer's cart not found!",
-            detail: "An invalid shopping cart's id was sent."
+            message: "Customer's basket not found!",
+            detail: "An invalid basket's id was sent."
           }
         ]
       })
     }
 
     const bookId = req.params.bookId
-    let items = cart.items
+    let items = basket.items
 
-    cart.items = items.filter(
+    basket.items = items.filter(
       item => JSON.stringify(item) !== JSON.stringify(bookId)
     )
 
-    await cart.save()
+    await basket.save()
 
     return res.status(204).send()
   } catch (error) {

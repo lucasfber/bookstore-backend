@@ -3,28 +3,27 @@ const router = express.Router()
 
 const auth = require("../middlewares/auth")
 const Order = require("../models/Order")
-const ShoppingCart = require("../models/ShoppingCart")
+const Basket = require("../models/Basket")
 
 router.post("/", auth, async (req, res) => {
   try {
     const customerId = req.customer.id
 
-    const cart = await ShoppingCart.findOne({ customerId }).populate("items")
-    const items = cart.items
+    const basket = await Basket.findOne({ customerId }).populate("items")
+    const items = basket.items
 
     if (items.length === 0) {
       return res.status(400).json({
         errors: [
           {
-            message: "Your shopping cart is empty!",
-            details:
-              "You must add items to your shopping cart to perform a purchase."
+            message: "Your basket is empty!",
+            details: "You must add items to your basket to perform a purchase."
           }
         ]
       })
     }
 
-    const totalValue = await ShoppingCart.getTotalValue(items)
+    const totalValue = await Basket.getTotalValue(items)
 
     let order = new Order({
       ...req.body,
@@ -35,7 +34,7 @@ router.post("/", auth, async (req, res) => {
 
     order = await order.save()
 
-    await cart.clearItems()
+    await basket.clearItems()
 
     res.status(200).json(order)
   } catch (err) {
