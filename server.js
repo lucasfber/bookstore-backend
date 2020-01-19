@@ -20,6 +20,7 @@ app.use("/api/creditcard", require("./routes/creditCards"))
 app.use("/api/favorites", require("./routes/favorites"))
 app.use("/api/orders", require("./routes/orders"))
 app.use("/api/profiles", require("./routes/profiles"))
+app.use("/api/reviews", require("./routes/reviews"))
 
 app.get("/test", (req, res) => res.status(200).json("API is running"))
 
