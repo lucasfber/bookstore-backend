@@ -1,11 +1,12 @@
 const express = require("express")
-const connectToDatabase = require("./config/db")
+const connectToDatabase = require("./config/db").connectDatabase
+const config = require("config")
 const PORT = process.env.PORT || 5000
 
 const app = express()
 
 // Connect database
-connectToDatabase()
+connectToDatabase(config.get("mongoURI"))
 
 // Init middlewares
 app.use(express.json({ extended: false }))
@@ -20,6 +21,10 @@ app.use("/api/favorites", require("./routes/favorites"))
 app.use("/api/orders", require("./routes/orders"))
 app.use("/api/profiles", require("./routes/profiles"))
 
-app.get("/", (req, res) => res.send("API is running"))
+app.get("/test", (req, res) => res.status(200).json("API is running"))
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+const server = app.listen(PORT, () =>
+  console.log(`Server is running on port ${PORT}`)
+)
+
+module.exports = { app, server }

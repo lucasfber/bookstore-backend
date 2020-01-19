@@ -72,9 +72,6 @@ router.put("/:addressId", async (req, res) => {
   const _id = req.params.addressId
 
   try {
-    /*     let address = await Address.findOneAndUpdate(_id, req.body, {
-      new: true
-    }) */
     let address = await Address.findOne({ _id })
 
     if (!address) {

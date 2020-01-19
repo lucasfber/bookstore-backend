@@ -47,7 +47,7 @@ router.post(
 
       await book.save()
 
-      res.status(200).json({ msg: "The book was created successfully" })
+      res.status(200).json(book)
     } catch (err) {
       console.error(err)
       res.status(500).send("Server error")

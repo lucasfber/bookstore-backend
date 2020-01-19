@@ -1,5 +1,4 @@
 {
   "mongoURI": "mongodb://localhost:27017/bookstore",
-  "mongoURITestEnv": "mongodb://localhost:27017/bookstore-test",
   "jwtSecret": "MySuPeRsEcReT"
 }

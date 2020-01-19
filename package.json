@@ -4,9 +4,16 @@
   "main": "server.js",
   "author": "Lucas Bertoldo",
   "license": "MIT",
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
   "scripts": {
     "start": "node server",
-    "dev": "nodemon server"
+    "dev": "nodemon server",
+    "test": "jest"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -15,5 +22,9 @@
     "express-validator": "^6.3.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.8.1"
+  },
+  "devDependencies": {
+    "jest": "22.4.2",
+    "supertest": "3.0.0"
   }
 }
