@@ -110,6 +110,17 @@ router.put("/:orderId", auth, async (req, res) => {
       })
     }
 
+    if (order.received) {
+      return res.status(400).json({
+        errors: [
+          {
+            message: "The order was already received!",
+            details: "This order was already marked as received."
+          }
+        ]
+      })
+    }
+
     order = await Order.findOneAndUpdate(
       { _id: req.params.orderId },
       { received: true },

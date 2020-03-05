@@ -58,6 +58,17 @@ router.put("/like/:id", auth, async (req, res) => {
       })
     }
 
+    if (review.customer.toString() === customer) {
+      return res.status(400).json({
+        errors: [
+          {
+            message: "Unable to like!",
+            details: "You cannot like or dislike your own review."
+          }
+        ]
+      })
+    }
+
     if (review.likes.filter(customer => customer === customer).length > 0) {
       return res.status(400).json({
         errors: [
@@ -103,6 +114,17 @@ router.put("/dislike/:id", auth, async (req, res) => {
             message: "Review not found!",
             details:
               "Unable to like! Possibly an invalid review identifier was sent."
+          }
+        ]
+      })
+    }
+
+    if (review.customer.toString() === customer) {
+      return res.status(400).json({
+        errors: [
+          {
+            message: "Unable to like!",
+            details: "You cannot like or dislike your own review."
           }
         ]
       })
