@@ -8,9 +8,9 @@ const Basket = require("../models/Basket")
 /* Creates an order */
 router.post("/", auth, async (req, res) => {
   try {
-    const customerId = req.customer.id
+    const customer = req.customer.id
 
-    const basket = await Basket.findOne({ customerId }).populate("items")
+    const basket = await Basket.findOne({ customer }).populate("items")
     const items = basket.items
 
     if (items.length === 0) {
@@ -28,7 +28,7 @@ router.post("/", auth, async (req, res) => {
 
     let order = new Order({
       ...req.body,
-      customerId,
+      customer,
       subtotal: totalValue,
       total: totalValue + req.body.shippingCost - req.body.discount
     })
@@ -47,13 +47,13 @@ router.post("/", auth, async (req, res) => {
 /* Get customer's orders */
 router.get("/", auth, async (req, res) => {
   try {
-    const customerId = req.customer.id
+    const customer = req.customer.id
 
-    const orders = await Order.find({ customerId })
+    const orders = await Order.find({ customer })
       .populate("items")
       .populate("shippingAddress")
-      .populate("customerId")
-      .populate("creditCardId")
+      .populate("customer")
+      .populate("creditCard")
 
     res.status(200).json(orders)
   } catch (error) {
@@ -72,8 +72,8 @@ router.get("/:orderId", auth, async (req, res) => {
     const order = await Order.findOne({ _id })
       .populate("items")
       .populate("shippingAddress")
-      .populate("customerId")
-      .populate("creditCardId")
+      .populate("customer")
+      .populate("creditCard")
 
     if (!order) {
       return res.status(404).json({

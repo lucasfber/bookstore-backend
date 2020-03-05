@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const orderSchema = new mongoose.Schema({
-  customerId: {
+  customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer"
   },
@@ -9,7 +9,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ["Credit Card", "MyBookStoreCard", "Bank Slip", "Pay at the Store"]
   },
-  creditCardId: {
+  creditCard: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "CreditCard"
   },

@@ -4,10 +4,6 @@ const { check, validationResult } = require("express-validator")
 const auth = require("../middlewares/auth")
 const CreditCard = require("../models/CreditCard")
 
-/* 
-  Add a new credit card
-  VALIDATION IS MISSING! [DONE]
-*/
 router.post(
   "/",
   [
@@ -65,12 +61,50 @@ router.get("/", auth, async (req, res) => {
   }
 })
 
-/* /* Include an item into favorites *
-router.put("/:bookId", auth, async (req, res) => {
+router.put("/:creditCardId", auth, async (req, res) => {
+  try {
+    _id = req.params.creditCardId
 
-}) */
+    let creditCard = await CreditCard.findOne({ _id })
+
+    if (creditCard) {
+      creditCard = await CreditCard.findOneAndUpdate(
+        { _id },
+        { $set: req.body },
+        { new: true }
+      )
+      return res.status(201).json(creditCard)
+    }
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
+})
 
 /* Remove a customer's credit card */
-router.delete("/:cardId", auth, async (req, res) => {})
+router.delete("/:creditCardId", auth, async (req, res) => {
+  try {
+    _id = req.params.creditCardId
+
+    let creditCard = await CreditCard.findOne({ _id })
+
+    if (!creditCard) {
+      return res.status(404).json({
+        errors: [
+          {
+            message: "Credit card not found!",
+            detail: "An invalid credit card's id was sent."
+          }
+        ]
+      })
+    }
+
+    await CreditCard.findOneAndRemove({ _id })
+    return res.status(204).send()
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error.")
+  }
+})
 
 module.exports = router

@@ -27,16 +27,16 @@ router.post("/", async (req, res) => {
 
 /* Get customer's favorites */
 router.get("/", auth, async (req, res) => {
-  const customerId = req.customer.id
-
+  const customer = req.customer.id
+  console.log(customer)
   try {
-    const favorites = await Favorites.findOne({ customerId }).populate("items")
+    const favorites = await Favorites.findOne({ customer }).populate("items")
     if (!favorites) {
       return res.status(404).json({
         errors: [
           {
-            message: "Customer not found!",
-            detail: "An invalid customer'id was sent."
+            message: "Favorites not found!",
+            detail: "The Favorites was not found for the current user."
           }
         ]
       })
@@ -52,9 +52,9 @@ router.get("/", auth, async (req, res) => {
 /* Include an item into favorites */
 router.put("/:bookId", auth, async (req, res) => {
   try {
-    const customerId = req.customer.id
+    const customer = req.customer.id
 
-    let favorites = await Favorites.findOne({ customerId })
+    let favorites = await Favorites.findOne({ customer })
 
     if (!favorites) {
       return res.status(404).json({
@@ -82,10 +82,10 @@ router.put("/:bookId", auth, async (req, res) => {
 
 /* Remove a book from customer's favorites */
 router.delete("/:bookId", auth, async (req, res) => {
-  const customerId = req.customer.id
+  const customer = req.customer.id
 
   try {
-    let favorites = await Favorites.findOne({ customerId })
+    let favorites = await Favorites.findOne({ customer })
 
     if (!favorites) {
       return res.status(404).json({

@@ -7,6 +7,8 @@ const config = require("config")
 const auth = require("../middlewares/auth")
 
 const Customer = require("../models/Customer")
+const Favorites = require("../models/Favorites")
+const Basket = require("../models/Basket")
 
 /* 
   @ desc - Creates a new customer
@@ -38,7 +40,7 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() })
     }
-    const { name, email, password, cpf } = req.body
+    const { email, password, cpf } = req.body
 
     try {
       let customer = await Customer.findOne({
@@ -60,6 +62,8 @@ router.post(
       customer.password = await bcrypt.hash(password, salt)
 
       await customer.save()
+
+      await new Favorites({ customer: customer.id }).save()
 
       const payload = {
         user: {

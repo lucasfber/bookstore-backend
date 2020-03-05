@@ -1,23 +1,26 @@
 const express = require("express")
 const { check, validationResult } = require("express-validator")
 const router = express.Router()
-
+const auth = require("../middlewares/auth")
 const Address = require("../models/Address")
 
 /* Create An Address */
 router.post(
   "/",
   [
-    check("receiver", "Receiver's name is required")
-      .not()
-      .isEmpty(),
-    check("street", "Street's name is required")
-      .not()
-      .isEmpty(),
-    check(
-      "number",
-      "Your must enter your house/apartment's number, if exists"
-    ).isNumeric()
+    auth,
+    [
+      check("receiver", "Receiver's name is required")
+        .not()
+        .isEmpty(),
+      check("street", "Street's name is required")
+        .not()
+        .isEmpty(),
+      check(
+        "number",
+        "Your must enter your house/apartment's number, if exists"
+      ).isNumeric()
+    ]
   ],
   async (req, res) => {
     const errors = validationResult(req)
@@ -27,8 +30,11 @@ router.post(
     }
 
     try {
+      const customer = req.customer.id
+
       const address = new Address({
-        ...req.body
+        ...req.body,
+        customer
       })
 
       await address.save()
@@ -44,11 +50,11 @@ router.post(
 )
 
 /* Get Customer's Adresses by Id */
-router.get("/:customerId", async (req, res) => {
-  const customerId = req.params.customerId
+router.get("/:customer", auth, async (req, res) => {
+  const customer = req.params.customer
 
   try {
-    let addresses = await Address.find({ customerId })
+    let addresses = await Address.find({ customer })
 
     if (!addresses) {
       res.status(404).json({
@@ -68,7 +74,7 @@ router.get("/:customerId", async (req, res) => {
 })
 
 /* Update An Address */
-router.put("/:addressId", async (req, res) => {
+router.put("/:addressId", auth, async (req, res) => {
   const _id = req.params.addressId
 
   try {
@@ -98,7 +104,7 @@ router.put("/:addressId", async (req, res) => {
 })
 
 /* Delete an Address */
-router.delete("/:addressId", async (req, res) => {
+router.delete("/:addressId", auth, async (req, res) => {
   const _id = req.params.addressId
 
   try {
@@ -115,7 +121,7 @@ router.delete("/:addressId", async (req, res) => {
       })
     }
 
-    const result = await Address.findOneAndDelete({ _id })
+    await Address.findOneAndDelete({ _id })
     res.status(204).json({ message: "The address was deleted successfully." })
   } catch (error) {
     console.error(error)
