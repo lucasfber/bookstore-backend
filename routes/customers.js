@@ -17,23 +17,19 @@ const Basket = require("../models/Basket")
 router.post(
   "/",
   [
-    check("name", "Name is required")
-      .not()
-      .isEmpty(),
+    check("name", "Name is required").not().isEmpty(),
     check("email", "Please include a valid email").isEmail(),
     check(
       "password",
       "Please enter a password with 6 or more characters"
     ).isLength({
-      min: 6
+      min: 6,
     }),
-    check("cpf", "CPF is required.")
-      .not()
-      .isEmpty(),
+    check("cpf", "CPF is required.").not().isEmpty(),
     check("cpf", "Enter the 11 cpf's digits.").isLength({
       min: 11,
-      max: 11
-    })
+      max: 11,
+    }),
   ],
   async (req, res) => {
     const errors = validationResult(req)
@@ -44,7 +40,7 @@ router.post(
 
     try {
       let customer = await Customer.findOne({
-        $or: [{ email: email }, { cpf: cpf }]
+        $or: [{ email: email }, { cpf: cpf }],
       })
 
       if (customer) {
@@ -54,7 +50,7 @@ router.post(
       }
 
       customer = new Customer({
-        ...req.body
+        ...req.body,
       })
 
       const salt = await bcrypt.genSalt(10)
@@ -67,8 +63,8 @@ router.post(
 
       const payload = {
         user: {
-          id: customer.id
-        }
+          id: customer.id,
+        },
       }
 
       jwt.sign(
@@ -96,7 +92,7 @@ router.get("/:customerId", async (req, res) => {
 
   const customer = await Customer.findOne({ _id: id }).populate({
     path: "favorites",
-    populate: { path: "items" }
+    populate: { path: "items" },
   })
 
   res.json(customer)
@@ -114,16 +110,16 @@ router.put("/", auth, async (req, res) => {
         errors: [
           {
             message: "Customer not found!",
-            details: "An invalid customer's id was sent."
-          }
-        ]
+            details: "An invalid customer's id was sent.",
+          },
+        ],
       })
     }
 
     customer = await Customer.findOneAndUpdate(
       { _id },
       { ...req.body },
-      { new: true }
+      { new: true, runValidators: true }
     )
     res.status(200).json(customer)
   } catch (error) {

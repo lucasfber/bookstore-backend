@@ -1,2 +1,6 @@
 node_modules/
 *.lock
+mern-prints/
+tcc/
+tcc-source/
+sources/

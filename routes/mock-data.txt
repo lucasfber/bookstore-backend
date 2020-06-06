@@ -43,3 +43,8 @@ password: blacksabbath70
 
 
 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lciI6eyJpZCI6IjVlMTY0Y2QzOGY0ZDAwMjllZjhjZGRlMCJ9LCJpYXQiOjE1Nzg1MjExNTcsImV4cCI6MTU3ODg4MTE1N30.wViaNVcO-h1KaQPvPDQrgIXLditkEVZ8ultMg55f_LM"
+
+John Doe
+
+johndoe@gmail.com
+pass123
